@@ -5,6 +5,7 @@ import br.com.superacaobikes.admin.domain.enums.EstadoPagamento;
 import br.com.superacaobikes.admin.domain.enums.TipoCliente;
 import br.com.superacaobikes.admin.domain.enums.TipoPlano;
 import br.com.superacaobikes.admin.repositories.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -25,18 +26,19 @@ public class DBService {
     private final PedidoRepository pedRep;
     private final PagamentoRepository pagRep;
     private final ItemPedidoRepository itpRep;
+    private final BCryptPasswordEncoder pe;
 
     public DBService(CategoriaRepository catRep,
-                                     ProdutoRepository prdRep,
-                                     EstadoRepository estRep,
-                                     CidadeRepository cddRep,
-                                     ClienteRepository cliRep,
-                                     EnderecoRepository endRep,
-                                     PlanoContasRepository plcRep,
-                                     FornecedorRepository forRep,
-                                     PedidoRepository pedRep,
-                                     PagamentoRepository pagRep,
-                                     ItemPedidoRepository itpRep) {
+                     ProdutoRepository prdRep,
+                     EstadoRepository estRep,
+                     CidadeRepository cddRep,
+                     ClienteRepository cliRep,
+                     EnderecoRepository endRep,
+                     PlanoContasRepository plcRep,
+                     FornecedorRepository forRep,
+                     PedidoRepository pedRep,
+                     PagamentoRepository pagRep,
+                     ItemPedidoRepository itpRep, BCryptPasswordEncoder pe) {
         this.catRep = catRep;
         this.prdRep = prdRep;
         this.estRep = estRep;
@@ -48,6 +50,7 @@ public class DBService {
         this.pedRep = pedRep;
         this.pagRep = pagRep;
         this.itpRep = itpRep;
+        this.pe = pe;
     }
 
     public void InstantiateTesteDatabse() throws ParseException {
@@ -118,7 +121,7 @@ public class DBService {
         cddRep.saveAll(Arrays.asList(c1,c2,c3));
 
 
-        Cliente cli1 = new Cliente(null, "Maria Silva", "rogeriojfa@gmail.com", "36985236547", TipoCliente.PESSOAFISICA);
+        Cliente cli1 = new Cliente(null, "Maria Silva", "rogeriojfa@gmail.com", "36985236547", TipoCliente.PESSOAFISICA, pe.encode("123456") );
         cli1.getTelefones().addAll(Arrays.asList("32155050", "988095654"));
 
         Endereco e1 = new Endereco(null, "Rua Flores", "300", "Apto 303", "jardim", "25809620", cli1, c1);
