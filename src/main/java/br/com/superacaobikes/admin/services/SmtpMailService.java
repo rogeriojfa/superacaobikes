@@ -14,7 +14,7 @@ public class SmtpMailService extends AbstractEmailService {
     @Autowired
     private MailSender mailSender;
 
-
+    @Autowired
     private JavaMailSender javaMailSender;
 
     private static final Logger LOG = LoggerFactory.getLogger(SmtpMailService.class);
