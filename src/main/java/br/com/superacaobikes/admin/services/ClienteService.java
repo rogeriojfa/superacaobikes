@@ -18,29 +18,30 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ClienteService {
-
-
-    private final  BCryptPasswordEncoder pe;
-
+    private final BCryptPasswordEncoder pe;
     private final ClienteRepository cliRep;
     private final EnderecoRepository endRep;
+    private final S3Service s3Service;
 
-    public ClienteService(BCryptPasswordEncoder pe, ClienteRepository cliRep, EnderecoRepository endRep) {
+    public ClienteService(BCryptPasswordEncoder pe, ClienteRepository cliRep, EnderecoRepository endRep, S3Service s3Service) {
         this.pe = pe;
         this.cliRep = cliRep;
         this.endRep = endRep;
+        this.s3Service = s3Service;
     }
 
-    public Cliente find(Integer id){
+    public Cliente find(Integer id) {
         UserSS user = UserService.authenticated();
-        if(user == null || user.hasRole(Perfil.ADMIN) && !id.equals(user.getId())){
+        if (user == null || user.hasRole(Perfil.ADMIN) && !id.equals(user.getId())) {
             throw new AuthorizationException("Acesso negado");
         }
 
@@ -57,7 +58,7 @@ public class ClienteService {
         return obj;
     }
 
-    public Cliente update(Cliente obj){
+    public Cliente update(Cliente obj) {
         Cliente newCli = find(obj.getId());
         updateData(newCli, obj);
         return cliRep.save(newCli);
@@ -68,17 +69,16 @@ public class ClienteService {
         newCli.setEmail(obj.getEmail());
     }
 
-    public void delete(Integer id){
+    public void delete(Integer id) {
         find(id);
         try {
             cliRep.deleteById(id);
-        }
-        catch (DataIntegrityViolationException e){
-            throw  new DataIntegrityException("Não é possível excluir um Cliente que tenha pedidos");
+        } catch (DataIntegrityViolationException e) {
+            throw new DataIntegrityException("Não é possível excluir um Cliente que tenha pedidos");
         }
     }
 
-    public List<Cliente> findAll(){
+    public List<Cliente> findAll() {
         return cliRep.findAll();
     }
 
@@ -97,13 +97,16 @@ public class ClienteService {
         Endereco end = new Endereco(null, objDto.getLogradouro(), objDto.getNumero(), objDto.getComplemento(), objDto.getBairro(), objDto.getCep(), cli, cid);
         cli.getEnderecos().add(end);
         cli.getTelefones().add(objDto.getTelefone1());
-        if (objDto.getTelefone2()!=null) {
+        if (objDto.getTelefone2() != null) {
             cli.getTelefones().add(objDto.getTelefone2());
         }
-        if (objDto.getTelefone3()!=null) {
+        if (objDto.getTelefone3() != null) {
             cli.getTelefones().add(objDto.getTelefone3());
         }
         return cli;
     }
 
+    public URI uploadProfilePicture(MultipartFile multipartFile){
+        return s3Service.uploadFile(multipartFile);
+    }
 }
