@@ -1,5 +1,6 @@
 package br.com.superacaobikes.admin.services;
 
+import br.com.superacaobikes.admin.services.exception.FileException;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
@@ -52,7 +53,7 @@ public class S3Service {
             LOG.info("Upload finalizado com sucesso.");
             return s3client.getUrl(bucketName, fileName).toURI();
         } catch (URISyntaxException e) {
-            throw new RuntimeException("Erro ao converter URL para URI");
+            throw new FileException("Erro ao converter URL para URI");
         }
     }
 }
