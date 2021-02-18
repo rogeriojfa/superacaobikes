@@ -1,13 +1,16 @@
 package br.com.superacaobikes.admin.services;
 
-import br.com.superacaobikes.admin.domain.ItemPedido;
-import br.com.superacaobikes.admin.domain.PagamentoComBoleto;
-import br.com.superacaobikes.admin.domain.Pedido;
+import br.com.superacaobikes.admin.domain.*;
 import br.com.superacaobikes.admin.domain.enums.EstadoPagamento;
 import br.com.superacaobikes.admin.repositories.ItemPedidoRepository;
 import br.com.superacaobikes.admin.repositories.PagamentoRepository;
 import br.com.superacaobikes.admin.repositories.PedidoRepository;
+import br.com.superacaobikes.admin.security.UserSS;
+import br.com.superacaobikes.admin.services.exception.AuthorizationException;
 import br.com.superacaobikes.admin.services.exception.ObjectNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -63,4 +66,15 @@ public class PedidoService {
         emlSrv.sendOrderConfirmationHtmlEmail(obj);
         return obj;
     }
+
+    public Page<Pedido> findPage(Integer page, Integer linesPerPage, String orderBy, String direction) {
+        UserSS user = UserService.authenticated();
+        if (user == null) {
+            throw new AuthorizationException("Acesso negado");
+        }
+        PageRequest pageRequest = PageRequest.of(page, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
+        Cliente cliente =  cliSrv.find(user.getId());
+        return pedRep.findByCliente(cliente, pageRequest);
+    }
+
 }
