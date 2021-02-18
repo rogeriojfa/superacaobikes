@@ -12,6 +12,7 @@ import br.com.superacaobikes.admin.security.UserSS;
 import br.com.superacaobikes.admin.services.exception.AuthorizationException;
 import br.com.superacaobikes.admin.services.exception.DataIntegrityException;
 import br.com.superacaobikes.admin.services.exception.ObjectNotFoundException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.awt.image.BufferedImage;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
@@ -31,12 +33,17 @@ public class ClienteService {
     private final ClienteRepository cliRep;
     private final EnderecoRepository endRep;
     private final S3Service s3Service;
+    private final ImageService imgSrv;
 
-    public ClienteService(BCryptPasswordEncoder pe, ClienteRepository cliRep, EnderecoRepository endRep, S3Service s3Service) {
+    @Value("${img.prefix.client.profile}")
+    private String prefix;
+
+    public ClienteService(BCryptPasswordEncoder pe, ClienteRepository cliRep, EnderecoRepository endRep, S3Service s3Service, ImageService imgSrv) {
         this.pe = pe;
         this.cliRep = cliRep;
         this.endRep = endRep;
         this.s3Service = s3Service;
+        this.imgSrv = imgSrv;
     }
 
     public Cliente find(Integer id) {
@@ -112,12 +119,12 @@ public class ClienteService {
             throw new AuthorizationException("Acesso negado");
         }
 
-        URI uri = s3Service.uploadFile(multipartFile);
-        Cliente cli = find(user.getId());
-        cli.setImageUrl(uri.toString());
-        cliRep.save(cli);
-        return uri;
-    }
+        BufferedImage jpgImage = imgSrv.getJpgImageFromFile(multipartFile);
+        String fileName = prefix + user.getId() + ".jpg";
+
+        return s3Service.uploadFile(imgSrv.getInputStream(jpgImage, "jpg"), fileName, "image");
+
+     }
 
 
 }
