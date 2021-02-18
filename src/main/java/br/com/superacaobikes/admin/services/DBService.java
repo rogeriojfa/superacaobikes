@@ -2,6 +2,7 @@ package br.com.superacaobikes.admin.services;
 
 import br.com.superacaobikes.admin.domain.*;
 import br.com.superacaobikes.admin.domain.enums.EstadoPagamento;
+import br.com.superacaobikes.admin.domain.enums.Perfil;
 import br.com.superacaobikes.admin.domain.enums.TipoCliente;
 import br.com.superacaobikes.admin.domain.enums.TipoPlano;
 import br.com.superacaobikes.admin.repositories.*;
@@ -124,13 +125,20 @@ public class DBService {
         Cliente cli1 = new Cliente(null, "Maria Silva", "rogeriojfa@gmail.com", "36985236547", TipoCliente.PESSOAFISICA, pe.encode("123456") );
         cli1.getTelefones().addAll(Arrays.asList("32155050", "988095654"));
 
+
+        Cliente cli2 = new Cliente(null, "Ana Costa", "rogerio.silva@ntendeicia.com.br", "36985236547", TipoCliente.PESSOAFISICA, pe.encode("123456") );
+        cli2.getTelefones().addAll(Arrays.asList("33225588", "988885654"));
+        cli2.addPerfil(Perfil.ADMIN);
+
         Endereco e1 = new Endereco(null, "Rua Flores", "300", "Apto 303", "jardim", "25809620", cli1, c1);
         Endereco e2 = new Endereco(null, "Av. Matos", "105", "Sala 800", "Centro", "89745895", cli1, c2);
+        Endereco e3 = new Endereco(null, "Av. Floriano", "963", "Fundos", "Linhares", "89745895", cli2, c2);
 
         cli1.getEnderecos().addAll(Arrays.asList(e1, e2));
+        cli2.getEnderecos().addAll(Arrays.asList(e3));
 
-        cliRep.saveAll(Arrays.asList(cli1));
-        endRep.saveAll(Arrays.asList(e1, e2));
+        cliRep.saveAll(Arrays.asList(cli1,cli2));
+        endRep.saveAll(Arrays.asList(e1, e2, e3));
 
         PlanoContas plc1 = new PlanoContas(null, "pagamento", TipoPlano.DEBITO);
         PlanoContas plc2 = new PlanoContas(null, "Venda", TipoPlano.CREDITO);
