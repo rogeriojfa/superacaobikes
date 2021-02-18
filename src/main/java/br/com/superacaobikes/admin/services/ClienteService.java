@@ -38,6 +38,9 @@ public class ClienteService {
     @Value("${img.prefix.client.profile}")
     private String prefix;
 
+    @Value("${img.profile.size}")
+    private Integer size;
+
     public ClienteService(BCryptPasswordEncoder pe, ClienteRepository cliRep, EnderecoRepository endRep, S3Service s3Service, ImageService imgSrv) {
         this.pe = pe;
         this.cliRep = cliRep;
@@ -118,12 +121,11 @@ public class ClienteService {
         if (user == null){
             throw new AuthorizationException("Acesso negado");
         }
-
         BufferedImage jpgImage = imgSrv.getJpgImageFromFile(multipartFile);
+        jpgImage = imgSrv.cropSquare(jpgImage);
+        jpgImage = imgSrv.resize(jpgImage, size);
         String fileName = prefix + user.getId() + ".jpg";
-
         return s3Service.uploadFile(imgSrv.getInputStream(jpgImage, "jpg"), fileName, "image");
-
      }
 
 
