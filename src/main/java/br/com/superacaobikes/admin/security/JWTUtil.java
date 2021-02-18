@@ -12,9 +12,8 @@ import java.util.Date;
 @Component
 public class JWTUtil {
 
-
     @Value("${jwt.secret}")
-    private static String secret;
+    private String secret;
 
     @Value("${jwt.expiration}")
     private Long expiration;
@@ -27,7 +26,7 @@ public class JWTUtil {
                 .compact();
     }
 
-    public static boolean tokenValido(String token) {
+    public boolean tokenValido(String token) {
         Claims claims = getClaims(token);
         if (claims != null) {
             String username = claims.getSubject();
@@ -41,7 +40,7 @@ public class JWTUtil {
         return false;
     }
 
-    public static String getUserName(String token) {
+    public String getUserName(String token) {
         Claims claims = getClaims(token);
         if (claims != null) {
             return claims.getSubject();
@@ -49,7 +48,7 @@ public class JWTUtil {
         return null;
     }
 
-    private static Claims getClaims(String token) {
+    public Claims getClaims(String token) {
         try {
             return Jwts.parser().setSigningKey(secret.getBytes()).parseClaimsJws(token).getBody();
         } catch (Exception e) {
