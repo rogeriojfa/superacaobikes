@@ -27,6 +27,9 @@ public class Cidade implements Serializable {
         this.estado = estado;
     }
 
+    public Cidade(Integer id, String nome) {
+    }
+
     public Integer getId() {
         return id;
     }
