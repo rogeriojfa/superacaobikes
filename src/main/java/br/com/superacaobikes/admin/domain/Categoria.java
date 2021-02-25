@@ -1,6 +1,5 @@
 package br.com.superacaobikes.admin.domain;
 
-
 import javax.persistence.*;
 import java.io.Serializable;
 

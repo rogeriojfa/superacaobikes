@@ -1,8 +1,6 @@
 package br.com.superacaobikes.admin.services;
 
-import br.com.superacaobikes.admin.domain.Cliente;
 import br.com.superacaobikes.admin.domain.Endereco;
-import br.com.superacaobikes.admin.repositories.ClienteRepository;
 import br.com.superacaobikes.admin.repositories.EnderecoRepository;
 import br.com.superacaobikes.admin.services.exception.ObjectNotFoundException;
 import org.springframework.stereotype.Service;

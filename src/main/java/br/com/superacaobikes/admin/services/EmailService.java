@@ -4,10 +4,7 @@ import br.com.superacaobikes.admin.domain.Cliente;
 import br.com.superacaobikes.admin.domain.Pedido;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
-
 import javax.mail.internet.MimeMessage;
-
-
 
 @Service
 public interface EmailService {
